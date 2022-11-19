@@ -1,0 +1,22 @@
+services:
+  fake-api:
+    image: fake-api
+    build: ./fake-api
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://fake-api:8080/"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    environment:
+      PYTHONUNBUFFERED: 1
+  scanner:
+    image: scanner
+    build: ./scanner
+    environment:
+      API_URL: "http://fake-api:8080"
+    depends_on:
+      fake-api:
+        condition: service_healthy
+
